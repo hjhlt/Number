@@ -13,7 +13,7 @@ from Net import Net
 n_epochs = 10
 batch_size_train = 60
 batch_size_test = 1000
-learning_rate = 0.0001
+learning_rate = 0.00001
 momentum = 0.5
 log_interval = 10
 random_seed = 1
@@ -102,7 +102,7 @@ def test():
         100. * correct / len(test_loader.dataset)))
 
 
-# train(1)
+#train(1)
 #
 test()  # 不加这个，后面画图就会报错：x and y must be the same size
 # for epoch in range(1, n_epochs + 1):
