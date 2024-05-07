@@ -9,6 +9,7 @@ from PIL import Image
 import cv2 as cv
 from Net import Net
 import numpy as np
+import tkinter
 
 network = Net()
 
@@ -18,38 +19,52 @@ network.load_state_dict(network_state_dict)
 network.eval()
 
 
+def maxPool(img):
+    img = np.array(img)
+    x, y = img.shape
+    result = np.zeros((28, 28))
+    for i in range(28):
+        for j in range(28):
+            result[i, j] = np.min(img[i * x // 28:(i + 1) * x // 28, j * y // 28:(j + 1) * y // 28])
+            if (result[i, j] > 0.5):
+                result[i, j] = 1
+            else:
+                result[i, j] = 0
+    return result
+
+
 def solve(image):
     # 使用PIL读取图片
     image = cv.imread(image)
-
-    image = cv.resize(image, [28, 28])
-
-    image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-
-    image = image / 255
-
-    image = [[1 - num for num in row] for row in image]
-
-    image = np.array(image)
-
-    image = torch.from_numpy(image).float()
-
     # 使用matplotlib显示图片
-    # plt.imshow(image, cmap='gray')
-
+    plt.imshow(image, cmap='gray')
     # 显示图片
-    # plt.show()
-
+    plt.show()
+    #将图片变为灰度图片
+    image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    #将像素值变为0-1之间方便神经网络进行预测
+    image = image / 255
+    #进行最大池化特征提取并将图片压缩到28x28的大小
+    image = maxPool(image)
+    #将黑白颠倒
+    image = [[1 - num for num in row] for row in image]
+    image = np.array(image)
+    image = torch.from_numpy(image).float()
+    # 使用matplotlib显示图片
+    plt.imshow(image, cmap='gray')
+    # 显示图片
+    plt.show()
     image = image.unsqueeze(0)
-
     image = image.unsqueeze(0)
-
     return image
 
-
-for i in range(10):
+nW=tkinter.Tk()
+nW.geometry('500x600')
+nW.title('手写数字识别')
+nW.mainloop()
+for i in range(1):
     x = 'test'
-    image_name = f"{i}.jpg"
+    image_name = "shouxie.jpg"
     image = solve(image_name)
     output = network(image)
     pred = output.data.max(1, keepdim=True)
